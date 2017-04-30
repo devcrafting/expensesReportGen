@@ -16,7 +16,7 @@ and VAT = {
 
 let parseDay (parts:array<string>) = DateTime.ParseExact(parts.[0], "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture)
 
-let parseDescription (parts:array<string>) = parts.[1]
+let parseDescription (parts:array<string>) = parts.[1].Replace("+", " ")
 
 let decimal' (s:string) = decimal (s.Replace("e", "")) 
 
@@ -88,7 +88,9 @@ let parseReceiptFileName file =
     }
 
 let getReceipts directory =
-    let receipts = Directory.EnumerateFiles(directory, "*.jpg")
+    let receipts = 
+        Directory.EnumerateFiles(directory, "*.jpg")
+        |> Seq.append <| Directory.EnumerateFiles(directory, "*.pdf")
     receipts
     |> Seq.map parseReceiptFileName
 
@@ -112,6 +114,6 @@ let writeCsv directory =
 
     File.WriteAllLines(Path.Combine(directory, "expenseReport.csv"), lines, System.Text.Encoding.UTF8)
 
-let directory = "C:/Users/cleme/OneDrive Entreprise/Administratif/Comptabilité/Achats/2016/2016_12/Note de frais"
+let directory = "C:/Users/cleme/OneDrive - DevCrafting/Administratif/Comptabilité/Achats/2017_04/Note de frais"
 
 writeCsv directory
